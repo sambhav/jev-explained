@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gaming · Jev Explained</title><link rel="stylesheet" href="style.css"></head><body><main><nav><a href="index.html">← Jev Explained</a><a href="browser.html">Browser use</a><a href="patterns.html">Product patterns</a></nav><p class="eyebrow">DEEP DIVE</p><h1>Gaming & real-time systems</h1><p class="lede">Games make the System One idea intuitive: at 10 decisions per second, generating prose is mostly wasted work. The useful output is usually <b>what should I do now?</b></p><section class="callout"><b>Real TypeSafe demo:</b> Jev plays Doom from structured textual game state at roughly 10 queries/second. TypeSafe explicitly notes that it is not image-based yet and that a hand-built Doom bot could play better; the point is reactive instruction-following over changing state.</section><h2>A Jev-driven game loop</h2><pre>every 100ms:
+  state = {
+    health, ammo, enemies, positions,
+    visible_items, objective, recent_events
+  }
+
+  d = jev.ask(state, {
+    action: Choice([MOVE, ATTACK, DODGE, PICK_UP, RETREAT]),
+    target: Choice(visible_targets),
+    danger: Score([LOW, MEDIUM, HIGH, CRITICAL]),
+    objective_met: Noul("Has the current objective been achieved?")
+  })
+
+  game.execute(d.action, d.target)</pre><h2>Why gaming is a useful analogy</h2><div class="cards"><article><h3>NPC behavior</h3><p>Give an NPC personality + world state and choose from legal actions. Code still enforces physics, inventory and game rules.</p><code>Choice([help, trade, flee, fight, investigate])</code></article><article><h3>Dynamic difficulty</h3><p>Judge how challenged or frustrated the player appears from gameplay state, then adjust within designer-defined bounds.</p><code>Score([bored, comfortable, stretched, overwhelmed])</code></article><article><h3>Moderation</h3><p>Classify chat or user-generated content with several independent semantic booleans instead of asking a chatbot to write a moderation essay.</p><code>Noul(toxic), Noul(threat), Noul(spam)</code></article><article><h3>Matchmaking & recommendations</h3><p>Retrieve candidate games/players/matches, judge fit against intent or play style, then sort.</p><code>Score(match_quality)</code></article><article><h3>Live director</h3><p>A game director can choose which event should happen next from a legal menu based on pacing and player state.</p><code>Choice([quiet, encounter, reward, story_beat])</code></article><article><h3>Simulation agents</h3><p>At high decision volume, low-latency bounded judgments can make populations of agents more feasible than repeated generative calls.</p></article></div><h2>Wikiracing: the high-cardinality lesson</h2><p>TypeSafe also demonstrates Jev navigating Wikipedia by choosing links toward a target page. A page can contain hundreds or thousands of links. Jev's current Choice cardinality is up to 255, so TypeSafe says larger action sets use a two-stage system: independently score/narrow candidates, then make an explicit Choice.</p><pre># General pattern for huge action spaces
+candidates = environment.available_actions()       # maybe 2,000
+scored = parallel_score(candidates, "moves us toward goal")
+shortlist = top(scored, 100)
+action = Choice(shortlist)</pre><p class="source">Source: TypeSafe's “Introducing System One Models and Jev” launch post, including Doom and Wikiracing demos.</p></main></body></html>
