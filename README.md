@@ -7,7 +7,7 @@ An independent, interactive guide for product managers and builders with a basic
 - `index.html`: core idea, interactive ticket routing, business value and boundaries.
 - `agents.html`: five-step agent walkthrough with uncertain-evidence and permission scenarios.
 - `architecture.html`: an interactive comparison of sequential text output and direct judgments, with documented behavior separated from inferred internals.
-- `benchmarks.html`: publisher recordings, a native Browser Use video, and nine-model workflow comparisons.
+- `benchmarks.html`: links to publisher recordings, a native Browser Use video, and nine-model workflow comparisons.
 - `economics.html`: adjustable monthly costs, sequential latency, shared costs and LLM fallback; calculated-time animation.
 - `patterns.html`, `browser.html`, `gaming.html`, `emerging.html`: deeper use cases.
 
