@@ -6,7 +6,7 @@
     const code=document.createElement('code');
     // Most examples intentionally use Python-like pseudocode; JSON-only examples are detected separately.
     const trimmed=text.trim();
-    let lang='language-python';
+    let lang=/^SELECT\b/i.test(trimmed)?'language-sql':'language-python';
     if((trimmed.startsWith('{')||trimmed.startsWith('[')) && /"[^"\n]+"\s*:/.test(trimmed)) lang='language-json';
     code.className=lang;
     code.textContent=text;
