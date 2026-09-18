@@ -29,45 +29,34 @@
   if ($('agent-lab')) {
     let step=0;
     function render() {
-      const s=$('agent-scenario').value, uncertain=s==='uncertain', blocked=s==='blocked', canAct=!uncertain&&!blocked;
-      const stages=[
-        ['TOOLS + APPLICATION','Collect the facts','Fetch the customer’s payment record. Give the model the message and relevant evidence; it should not invent what the ledger contains.',`Customer: “You charged me twice.”|Ledger: ${uncertain?'one settled charge; one pending authorization':'two settled charges for the same order'}|Permission: ${blocked?'read only':'refunds permitted within account limits'}`],
-        ['JEV · ILLUSTRATIVE OUTPUT','Ask narrow questions together','Identify the intent and judge whether the evidence supports a duplicate-charge request. The questions share the same record; neither depends on the other’s answer.',`Choice: refund request · 97%|Noul: evidence supports duplicate · ${uncertain?'54%':'96%'}|Decision threshold for this demo: 90%`],
-        ['DETERMINISTIC CODE',uncertain?'Gather more evidence':blocked?'Stop at the permission boundary':'Validate the proposed action',uncertain?'The evidence is below the policy threshold. Fetch settlement status or ask a person to review; do not issue a refund yet.':blocked?'A confident model result does not grant refund permission. Hand the case to an authorized operator.':'Check the refund limit, customer consent, duplicate-refund protection and permission before calling the tool.',`Evidence check: ${uncertain?'needs review':'passed'}|Permission check: ${blocked?'blocked':'passed'}|Route: ${canAct?'refund tool':'review queue'}`],
-        ['TOOLS + APPLICATION',canAct?'Execute once; verify the result':'Create a review task',canAct?'Use an idempotency key to avoid issuing the refund twice. Read the tool receipt before marking the operation complete.':'Record the evidence and reason for escalation. The agent has advanced the case without claiming that money was refunded.',canAct?'Refund tool: succeeded|Receipt: refund_demo_001|State: refund confirmed':'Review ticket: created|Refund tool: not called|State: awaiting review'],
-        ['GENERATIVE LLM',canAct?'Write the customer’s response':'Explain the next step',canAct?'A language model can write a natural reply grounded in the verified receipt. Jev did not need to generate that text.':'A language model explains that the case is being checked. It must not claim the refund is complete.',canAct?'“The duplicate charge has been refunded.”|Claim grounded in: tool receipt':'“We’re checking the charge and will follow up.”|Claim grounded in: review ticket']
-      ];
+      const stages=JevWalkthroughs.agentSteps($('agent-scenario').value);
       const [owner,title,copy,evidence]=stages[step];
       $('agent-owner').textContent=owner; $('agent-title').textContent=title; $('agent-copy').textContent=copy;
       $('agent-evidence').replaceChildren(...evidence.split('|').map(t=>{const el=document.createElement('div');el.className='evidence-item';el.textContent=t;return el;}));
-      document.querySelectorAll('[data-agent-stage]').forEach(el=>el.classList.toggle('active',+el.dataset.agentStage===step));
+      document.querySelectorAll('[data-agent-stage]').forEach(el=>{const active=+el.dataset.agentStage===step;el.classList.toggle('active',active);el.setAttribute('aria-pressed',String(active));});
       $('agent-prev').disabled=step===0; $('agent-next').disabled=step===4;
       $('agent-status').textContent=`Step ${step+1} of 5 · ${$('agent-scenario').selectedOptions[0].textContent}`;
     }
     $('agent-next').addEventListener('click',()=>{step=Math.min(4,step+1);render();});
     $('agent-prev').addEventListener('click',()=>{step=Math.max(0,step-1);render();});
     $('agent-reset').addEventListener('click',()=>{step=0;render();});
-    $('agent-scenario').addEventListener('change',()=>{step=0;render();}); render();
+    $('agent-scenario').addEventListener('change',()=>{step=0;render();});
+    document.querySelectorAll('[data-agent-stage]').forEach(el=>el.addEventListener('click',()=>{step=+el.dataset.agentStage;render();})); render();
   }
   if ($('architecture-lab')) {
     let step=0;
-    const stages=[
-      ['Start with the same problem','Both systems receive the ticket and defined questions. There is still real language understanding to do.'],
-      ['Process the input','The generative model builds contextual representations during prefill. Jev also has to evaluate the state; its exact internal computation is not disclosed.'],
-      ['The output paths diverge','The LLM starts producing a structured answer one token at a time. TypeSafe describes Jev returning the independent judgments together, without that text-generation loop.'],
-      ['Generation continues','The next output token depends on the previous output. Jev’s illustrated answer is already available to the application. This animation is conceptual, not a measured race.'],
-      ['Your code decides what to do','Both paths can feed the same application policy. Jev’s specialization may reduce the work needed to get there; correctness and end-to-end latency still need evaluation.']
-    ];
+    const stages=JevWalkthroughs.architecture;
     function render(){
-      $('arch-count').textContent=`STEP ${step+1} OF 5`; $('arch-title').textContent=stages[step][0];$('arch-copy').textContent=stages[step][1];
+      $('arch-count').textContent=`STAGE ${step+1} OF 4`; $('arch-title').textContent=stages[step][0];$('arch-copy').textContent=stages[step][1];
       document.querySelectorAll('[data-arch=read]').forEach(el=>el.classList.toggle('active',step>=1));
-      document.querySelectorAll('#decode-tokens span').forEach((el,i)=>el.classList.toggle('shown',step===4 || (step===3&&i<3) || (step===2&&i===0)));
+      document.querySelectorAll('#decode-tokens span').forEach((el,i)=>el.classList.toggle('shown',step>=2));
       $('parallel-answers').classList.toggle('active',step>=2);
-      document.querySelector('[data-arch=direct]').classList.toggle('active',step>=2);
-      document.querySelector('[data-arch=parse]').classList.toggle('active',step>=4);
-      $('arch-prev').disabled=step===0;$('arch-next').disabled=step===4;
+      document.querySelector('[data-arch=direct]').classList.toggle('active',step>=3);
+      document.querySelector('[data-arch=parse]').classList.toggle('active',step>=3);
+      $('arch-policy').hidden=step!==3; $('arch-progress').textContent=`Stage ${step+1} of 4`;
+      $('arch-prev').disabled=step===0;$('arch-next').disabled=step===3;
     }
-    $('arch-next').addEventListener('click',()=>{step=Math.min(4,step+1);render();});$('arch-prev').addEventListener('click',()=>{step=Math.max(0,step-1);render();});$('arch-reset').addEventListener('click',()=>{step=0;render();});render();
+    $('arch-next').addEventListener('click',()=>{step=Math.min(3,step+1);render();});$('arch-prev').addEventListener('click',()=>{step=Math.max(0,step-1);render();});$('arch-reset').addEventListener('click',()=>{step=0;render();});render();
   }
   document.querySelectorAll('[data-embed]').forEach(button=>button.addEventListener('click',()=>{
     const holder=button.closest('.embed'), iframe=document.createElement('iframe');

@@ -4,19 +4,20 @@ An independent, interactive guide for product managers and builders with a basic
 
 ## Reading path
 
-- `index.html`: core idea, interactive ticket routing, changes to system design and boundaries.
-- `agents.html`: five-step agent walkthrough with uncertain-evidence and permission scenarios.
-- `architecture.html`: an interactive comparison of sequential text output and direct judgments, with documented behavior separated from inferred internals.
-- `benchmarks.html`: links to publisher recordings, a native Browser Use video, and nine-model workflow comparisons.
-- `economics.html`: adjustable monthly costs, sequential latency, shared costs and LLM fallback; calculated-time animation.
-- `patterns.html`, `browser.html`, `gaming.html`, `emerging.html`: deeper use cases.
+1. `index.html`: routing, uncertainty and the three output types.
+2. `architecture.html`: compare complete outputs and separate documented behavior from inferred internals.
+3. `agents.html`: a five-step refund case, including pending records, permissions and tool failure; then request dependencies.
+4. `benchmarks.html`: recorded execution and nine-model workflow comparisons, with measurement boundaries.
+5. `economics.html`: estimate whole-workflow cost and latency from explicit assumptions.
+
+`patterns.html` indexes optional search, tool-selection, notification, browser, game and context-selection examples. Every page links to the guide contents and its appropriate continuation. `walkthroughs.js` supplies the scripted scenario states and request-count logic, covered by regression tests.
 
 ## Run locally
 
 ```sh
 python -m http.server 8765
 # Open http://localhost:8765
-node --test tests/economics.test.cjs
+node --test tests/*.test.cjs
 ```
 
 Static HTML/CSS/JS, no build step or API credentials. D3 7.9.0 and highlight.js 11.11.1 are vendored with licenses. The core educational demos run locally; videos and the optional benchmark explorer load external media when requested.

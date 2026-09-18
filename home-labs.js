@@ -21,15 +21,14 @@
     }));
     document.querySelectorAll('[data-answer]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.answer===key)));
   }
+  if ($('answer-lab')) {
   document.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>showAnswer(b.dataset.answer)));
   showAnswer('noul');
-  const names={intent:'Refund request?',duplicate:'Two settled charges?',urgency:'Urgent?'};
+  }
+  const names={intent:'Refund request?',duplicate:'Does the note address the complaint?',urgency:'Urgent?'};
   function renderPlan() {
     const selected=[...document.querySelectorAll('[data-check]:checked')].map(el=>el.dataset.check);
-    const needsFetch=document.querySelector('[name="record-source"]:checked').value==='fetch' && selected.includes('duplicate');
-    // Fetching is gated on the intent judgment in this teaching workflow.
-    const first=needsFetch?[...new Set(['intent',...selected.filter(k=>k!=='duplicate')])]:selected;
-    const rounds=selected.length ? (needsFetch?2:1):0;
+    const {needsFetch,first,rounds}=JevWalkthroughs.requestPlan(selected,document.querySelector('[name="record-source"]:checked').value==='fetch');
     const board=$('dependency-board'); board.replaceChildren();
     function stage(label,items,kind) {
       const group=document.createElement('div'); group.className='workflow-stage '+kind;
@@ -38,15 +37,17 @@
       items.forEach(text=>{const node=document.createElement('div');node.className='workflow-node';node.textContent=text;nodes.append(node);});
       group.append(title,nodes);board.append(group);
     }
-    stage('AVAILABLE INPUT',[needsFetch?'Customer message':'Customer message + payment record'],'input-stage');
-    if(rounds) stage('MODEL REQUEST 1 · QUESTIONS RUN TOGETHER',first.map(k=>names[k]+(needsFetch&&k==='intent'&&!selected.includes('intent')?' (needed before lookup)':'')),'model-stage');
+    stage('AVAILABLE INPUT',[needsFetch?'Customer message':'Customer message + investigation note'],'input-stage');
+    if(first.length) stage('MODEL REQUEST 1 · SHARED INPUT',first.map(k=>names[k]),'model-stage');
     if(needsFetch) {
-      stage('TOOL CALL · AFTER REFUND INTENT IS IDENTIFIED',['Fetch payment record'],'tool-stage');
-      stage('MODEL REQUEST 2 · USES THE NEW RECORD',[names.duplicate],'model-stage');
+      stage('TOOL CALL · GET THE MISSING EVIDENCE',['Fetch investigation note'],'tool-stage');
+      stage(`MODEL REQUEST ${rounds} · USES THE NEW NOTE`,[names.duplicate],'model-stage');
     }
     stage('APPLICATION CODE',[rounds?'Apply policy; act or request review':'No model judgments selected'],'policy-stage');
     $('dependency-count').textContent=rounds+' model request round'+(rounds===1?'':'s');
-    $('dependency-explanation').textContent=needsFetch?'The duplicate-charge question must wait for the payment record. Adding it creates a second model round. Intent and urgency can share the first request.':rounds?'All selected questions use the same evidence. Adding another independent question does not add a model request round. It may still affect processing time and cost.':'Select a question to add a model request. The application still needs a policy for handling the case.';
+    $('dependency-explanation').textContent=needsFetch?(first.length?'In this workflow, the message checks run first. The note check waits for the lookup, then uses a second request. You could instead fetch the note first and ask all questions together; that changes when the early answers are available.':'Only the note question is selected. Fetch the note, then make one model request. A tool lookup alone does not create an extra model round.'):rounds?'All selected questions use evidence already available. They fit in one request, although adding questions may still affect processing time and cost.':'No questions selected, so no model requests are made.';
+
   }
-  document.querySelectorAll('[data-check], [name="record-source"]').forEach(el=>el.addEventListener('change',renderPlan));renderPlan();
+  if ($('dependency-lab')) document.querySelectorAll('[data-check], [name="record-source"]').forEach(el=>el.addEventListener('change',renderPlan));
+  if ($('dependency-lab')) renderPlan();
 })();
