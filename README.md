@@ -4,7 +4,7 @@ An independent, interactive guide for product managers and builders with a basic
 
 ## Reading path
 
-- `index.html`: core idea, interactive ticket routing, business value and boundaries.
+- `index.html`: core idea, interactive ticket routing, changes to system design and boundaries.
 - `agents.html`: five-step agent walkthrough with uncertain-evidence and permission scenarios.
 - `architecture.html`: an interactive comparison of sequential text output and direct judgments, with documented behavior separated from inferred internals.
 - `benchmarks.html`: links to publisher recordings, a native Browser Use video, and nine-model workflow comparisons.

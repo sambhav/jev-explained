@@ -39,7 +39,7 @@
   const parts=[result.jevCost,result.fallbackCost,result.sharedCost],total=result.hybridCost;
   document.querySelectorAll('#cost-stack span').forEach((el,i)=>{el.style.width=(total?parts[i]/total*100:0)+'%';});
   $('cost-breakdown').textContent=`${money(result.jevCost)} Jev + ${money(result.fallbackCost)} fallback + ${money(result.sharedCost)} shared spend per month.`;
-  $('economics-takeaway').textContent=savings>0&&speedup>1?'These assumptions support a cheaper, faster workflow. Validate equivalent task quality before treating this as a business case.':'Under these assumptions, Jev does not improve both cost and latency. The right answer can be to keep the existing path.';
+  $('economics-takeaway').textContent=savings>0&&speedup>1?'With these inputs, the Jev-first path has lower modeled cost and expected latency. This calculation does not measure decision quality.':'With these inputs, the Jev-first path does not reduce both cost and expected latency. Extra calls and other workflow costs determine the result.';
   $('economics-takeaway').classList.toggle('review',!(savings>0&&speedup>1));
  }
  Object.values(keys).forEach(id=>$(id).addEventListener('input',()=>{document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed','false'));render();}));
