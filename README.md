@@ -4,7 +4,7 @@ An independent, interactive visual essay for product managers and builders with 
 
 ## Experience
 
-One continuous essay follows a payments platform's support queue on launch day: a checkout outage at 10:04, then a duplicate-charge refund at 10:19. It explains judgment versus policy, the three answer types (Noul, Choice, Score) and their limits, speculative fan-out, generated text versus typed judgments, the agent loop and request dependencies, the documented weak spots of jev-1.13, the published recordings and benchmarks, whole-workflow cost and latency, and the same pattern in search, browser agents, games, context compaction and Probably. Dark by default with a light theme switch, responsive layout and reduced-motion support.
+One continuous essay follows a payments platform through one fictional launch day, from the first ticket at 10:04 to the 18:00 review, in timestamped chapters. It explains judgment versus policy, the three answer types (Noul, Choice, Score) and their limits, speculative fan-out, generated text versus typed judgments, the agent loop and request dependencies, the documented weak spots of jev-1.13, the published recordings and benchmarks, whole-workflow cost and latency, and the same pattern in search, browser agents, games, context compaction and Probably. Dark by default with a light theme switch, responsive layout and reduced-motion support.
 
 The old chapter URLs (`architecture.html`, `agents.html`, `benchmarks.html`, `economics.html`, `patterns.html`, `browser.html`, `gaming.html`, `emerging.html`) redirect to the matching section of `index.html`.
 
