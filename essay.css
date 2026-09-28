@@ -270,7 +270,8 @@ select,input[type=number] { font:14px Arial,Helvetica,sans-serif; color:var(--in
  h2 { font-size:32px; }
  .lab { padding:15px; }
  .lane { padding:12px; }
- .segmented button { flex-basis:100%; }
+ .segmented { display:grid; grid-template-columns:1fr 1fr; }
+ .segmented button { min-width:0; padding:10px 8px; font-size:12px; }
  .agent-map { grid-template-columns:1fr 1fr; }
  .bench-row { grid-template-columns:78px 1fr 68px; font-size:11px; gap:8px; }
  .calibration-visual { grid-template-columns:repeat(5,1fr); max-width:260px; }
