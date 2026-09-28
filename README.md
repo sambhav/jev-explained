@@ -4,17 +4,18 @@ An independent, interactive visual essay for product managers and builders with 
 
 ## Experience
 
-One continuous essay follows a payments platform through one fictional launch day, from the first ticket at 10:04 to the 18:00 review, in timestamped chapters. It explains judgment versus policy, the three answer types (Noul, Choice, Score) and their limits, speculative fan-out, generated text versus typed judgments, the agent loop and request dependencies, the documented weak spots of jev-1.13, the published recordings and benchmarks, whole-workflow cost and latency, and the same pattern in search, browser agents, games, context compaction and Probably. Dark by default with a light theme switch, responsive layout and reduced-motion support.
+One continuous essay in eight parts: what Jev is (Noul, Choice, Score), how to use it (request shape, limits, fan-out, confidence, dependencies), how a conventional LLM answers versus how Jev answers (documented behaviour, Archer Hume's measurements, an illustrative attention mask), a three-lane speed race on the same questions (LLM writes JSON, LLM reads labels, Jev), the open clones grouped into four families, unique uses, a cost and latency calculator, and the documented jagged edges of jev-1.13. Dark by default with a light theme switch, responsive layout and reduced-motion support.
 
-The old chapter URLs (`architecture.html`, `agents.html`, `benchmarks.html`, `economics.html`, `patterns.html`, `browser.html`, `gaming.html`, `emerging.html`) redirect to the matching section of `index.html`.
+The old chapter URLs redirect to the matching section of `index.html`.
 
 ## Source map
 
 - `index.html`: the essay.
 - `essay.css`: design tokens, layout and figure styles, matching Dynamic Tools.
 - `essay.js`: theme switch.
-- `learn.js`, `home-labs.js`: ticket routing, answer types, the two-path walkthrough, the agent walkthrough and request dependencies.
+- `learn.js`, `home-labs.js`: confidence routing, answer types, the two-path walkthrough and request dependencies.
 - `walkthroughs.js`: scripted scenario states and request-count logic, covered by regression tests.
+- `race.js`: the side-by-side speed model, exported for tests.
 - `benchmarks.js`, `economics.js`: the published benchmark snapshot and the cost and latency calculator.
 
 ## Run locally
