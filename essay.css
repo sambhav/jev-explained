@@ -38,7 +38,7 @@ p a:hover,li a:hover,figcaption a:hover { color:var(--blue); border-color:var(--
 .blog-section { padding:60px 0; border-top:1px solid var(--line); scroll-margin-top:40px; }
 .blog-section:first-of-type { padding-top:15px; border:0; }
 .blog-section>p,.blog-section>ul,.blog-section>ol { font-size:18px; line-height:1.85; color:var(--ink); }
-.blog-section>p,.blog-section>ul,.blog-section>ol,.blog-section>h2,.blog-section>.reader-paths { max-width:720px; margin-left:auto; margin-right:auto; }
+.blog-section>p,.blog-section>ul,.blog-section>ol,.blog-section>h2,.blog-section>.reader-paths,.blog-section>.citations { max-width:720px; margin-left:auto; margin-right:auto; }
 .blog-section>p { margin-top:22px; margin-bottom:22px; }
 .blog-section>h2 { font-size:clamp(34px,4vw,55px); }
 .blog-section>ul,.blog-section>ol { padding-left:22px; }
