@@ -12,7 +12,7 @@ test('shared delay reduces workflow speedup',()=>{const a=calculate({...p,common
 test('free LLM input and output has no cost break-even',()=>{const r=calculate({...p,llmIn:0,llmOut:0});assert.equal(r.costBreakEven,null);assert.ok(Number.isFinite(r.hybridCost));});
 test('break-even fallback equalizes modeled costs',()=>{const first=calculate(p);const r=calculate({...p,fallback:first.costBreakEven});close(r.baselineCost,r.hybridCost);});
 test('HTML numeric defaults satisfy their min, max and step constraints',()=>{
- const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../economics.html'),'utf8');
+ const html=require('node:fs').readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  for(const tag of html.match(/<input[^>]+type="number"[^>]*>/g)){
   const attrs=Object.fromEntries([...tag.matchAll(/([\w-]+)="([^"]*)"/g)].map(m=>[m[1],m[2]]));
   const value=+attrs.value,min=+attrs.min,max=+attrs.max,step=+attrs.step;

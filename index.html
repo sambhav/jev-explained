@@ -1,12 +1,503 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An explanation of decision models through Jev: interfaces, computation, agent workflows and measured system effects."><title>Start here · Jev Explained</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="learn.css?v=lessons-2"><link rel="stylesheet" href="editorial.css?v=flow-1"></head><body><noscript><p class="noscript">JavaScript enables the interactive illustrations and calculators. The explanations and source links remain available below.</p></noscript><a class="skip" href="#content">Skip to content</a><main><nav aria-label="Main navigation"><a class="notebook-home" href="index.html">Decision models · notes by Sambhav</a><details class="guide-menu"><summary>Guide contents</summary><ol><li><a href="index.html" aria-current="page">1 · Basics</a></li><li><a href="architecture.html">2 · Architecture</a></li><li><a href="agents.html">3 · Agent walkthrough</a></li><li><a href="benchmarks.html">4 · Evidence</a></li><li><a href="economics.html">5 · Cost & latency</a></li></ol><p>Optional examples</p><ul><li><a href="patterns.html">Examples</a></li><li><a href="browser.html">Browser agents</a></li><li><a href="gaming.html">Game loops</a></li><li><a href="emerging.html">Further experiments</a></li></ul></details></nav><p class="page-position">Guide · 1 of 5</p><div id="content">
-<header class="article-header"><p class="article-meta">Explainer · 18 September 2026 · By Sambhav Kothari</p><h1>Decision models, explained through Jev</h1><p>Language models often generate text that a program then interprets as a decision. For example, an agent might ask a model to read a support ticket and return the name of the team that should handle it.</p><p>Jev, from TypeSafe, takes a different output approach: you define a question and its allowed answers, and receive a judgment with probabilities or a score. This guide uses small examples to explain the interface, what the outputs mean. The following chapters cover architecture, agent workflows and the published performance results.</p><aside class="article-contents" aria-label="Article contents"><p>In this article</p><ol><li><a href="#try-it">Routing a ticket and handling uncertainty</a></li><li><a href="#answers">Yes/no judgments, choices and scores</a></li></ol><p class="further-reading">Further reading: <a href="architecture.html">Architecture</a> · <a href="benchmarks.html">Recordings and benchmarks</a> · <a href="economics.html">Cost and latency calculator</a></p></aside></header>
-<section id="try-it" class="chapter"><div class="section-heading"><div><p class="eyebrow">Example 1</p><h2>Routing a ticket and handling uncertainty</h2></div><span class="badge">Interactive illustration</span></div><p>Choose a message. Watch the proposed route change. Then move the threshold to change when your product asks a human for help.</p>
-<div class="lab" id="ticket-lab"><div class="segmented" aria-label="Example message"><button data-ticket="outage" aria-pressed="true">Clear outage</button><button data-ticket="ambiguous" aria-pressed="false">Ambiguous request</button><button data-ticket="billing" aria-pressed="false">Billing question</button></div><div class="split"><div><p class="label">WHAT THE CUSTOMER WROTE</p><blockquote id="ticket-text"></blockquote><p class="label">WHAT THE PRODUCT ASKS</p><p>“Which team should handle this?”</p><p class="source">Allowed answers: checkout, billing, identity, other. This is a <b>Choice</b>.</p></div><div><p class="label">ILLUSTRATIVE MODEL PROBABILITIES</p><div id="ticket-bars" class="probabilities"></div></div></div><div class="policy"><label for="ticket-threshold">Minimum winning probability to route automatically <output id="ticket-threshold-value">80%</output></label><input id="ticket-threshold" type="range" min="40" max="99" value="80"><p id="ticket-action" class="result" aria-live="polite"></p></div><p class="source">These probabilities are invented, not a live Jev response. The slider uses the winning option’s probability; Jev’s separate <code>confidence</code> field is a different statistic. A threshold is a product policy, not a guarantee of correctness.</p></div>
-<p>The model estimates which team fits. The threshold belongs to the application: raising it sends more cases for review. The same model output can therefore lead to different actions under different policies.</p></section>
-<section class="chapter" id="answers"><p class="eyebrow">Example 2</p><h2>One message, three kinds of answer</h2><p>The question determines the output. Select a question to inspect its answer and how a program could use it.</p>
-<div class="lab" id="answer-lab"><blockquote>“Nobody can complete checkout. Every payment fails, and our launch starts in two hours.”</blockquote><div class="segmented" aria-label="Question type"><button data-answer="noul" aria-pressed="true">Is this an outage?</button><button data-answer="choice" aria-pressed="false">Which team?</button><button data-answer="score" aria-pressed="false">How severe?</button></div><div class="split"><div><p class="label" id="answer-type">NOUL · YES / NO</p><h3 id="answer-question">Does the message describe an outage?</h3><div id="answer-chart" class="answer-chart"></div></div><div class="answer-readout" aria-live="polite"><p class="label">RETURNED VALUE</p><output id="answer-value"></output><p id="answer-explanation"></p><p class="label">EXAMPLE APPLICATION RULE</p><code id="answer-rule"></code></div></div><p class="source">Invented outputs for teaching. Score uses a probability-weighted mean of rubric positions, starting at 0. These are model judgments, not observed facts. <a href="https://docs.typesafe.ai/">API documentation ↗</a></p></div>
-<details class="reading-detail"><summary>How would a regular LLM answer?</summary><p>You could ask an LLM to generate JSON such as <code>{"team":"checkout"}</code>. Structured output constrains the format. The model still generates output tokens in sequence. Jev exposes a specialized interface for judgments; your program receives typed values and probabilities.</p><p>Classification and scoring have existed for years. The useful question is whether a model can handle your changing questions accurately, quickly and cheaply enough to use throughout a workflow.</p><a href="architecture.html">Step through both output paths →</a></details></section>
-<section class="chapter"><h2>Where to go next</h2><p>Continue with <a href="architecture.html">how the output paths differ</a>, then follow a complete agent. The evidence and calculator pages build on those two explanations.</p><dl class="reading-list"><div><dt><a href="agents.html">A support agent, step by step</a></dt><dd>Follow the evidence, permission checks and tool calls through a refund request.</dd></div><div><dt><a href="architecture.html">How the output paths differ</a></dt><dd>Compare sequential text generation with typed judgments. Separate documented behavior from hypotheses about the internals.</dd></div><div><dt><a href="benchmarks.html">Recorded demos and model comparisons</a></dt><dd>Watch an actual agent run, then inspect benchmark results and their methodology.</dd></div><div><dt><a href="economics.html">Estimating workflow cost and latency</a></dt><dd>Change model timings, tool delays and fallback rates to see their combined effect.</dd></div></dl></section>
-<section class="chapter"><h2>Limitations</h2><div class="grid"><article class="card"><h3>A valid answer can be wrong</h3><p>Selecting a real team avoids an invented team name. It does not prove the selected team is correct.</p></article><article class="card"><h3>A probability needs validation</h3><p>Test whether predictions near 80% are correct roughly 80% of the time on your own data.</p></article><article class="card"><h3>Some work still needs generation</h3><p>Writing a reply, creating code and working through a new plan remain natural jobs for generative models.</p></article></div></section>
-</div><footer><div class="chapter-navigation"><span>Start of the guide</span><a href="architecture.html">Next: 2 · Architecture →</a></div><p>Independent educational notes. Scripted examples use invented outputs; published measurements are attributed separately. <a href="https://github.com/sambhav/jev-explained">Source on GitHub</a>.</p></footer></main><script src="vendor/highlight.min.js"></script><script src="code-highlight.js"></script><script src="walkthroughs.js?v=flow-1"></script><script src="learn.js?v=flow-1"></script><script src="home-labs.js?v=flow-1"></script></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="An interactive visual essay on decision models, explained through Jev: typed judgments, probabilities, agent loops and whole-workflow cost.">
+<meta property="og:title" content="Decision Models">
+<meta property="og:description" content="Most of what your agent does is choose. Today, it chooses by writing. What changes when the model returns the answer instead?">
+<meta property="og:url" content="https://sambhav.dev/jev-explained/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Decision Models">
+<meta name="twitter:description" content="Most of what your agent does is choose. Today, it chooses by writing. What changes when the model returns the answer instead?">
+<link rel="canonical" href="https://sambhav.dev/jev-explained/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Decision Models · What changes when the model returns the answer instead of writing it out</title>
+<script>try{if(localStorage.getItem('jev-explained-theme')==='light')document.documentElement.classList.add('light')}catch(e){}</script>
+<link rel="stylesheet" href="essay.css?v=essay-1">
+</head>
+<body>
+<div class="essay">
+<a class="skip-link" href="#main">Skip to essay</a>
+<div class="theme-control"><button class="theme-button" id="theme-button" type="button" aria-label="Switch to light theme"><svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button></div>
+<noscript><p class="noscript">JavaScript runs the interactive figures and the calculator. The essay and its sources remain readable without it.</p></noscript>
+<div class="essay-grid"><main id="main"><article>
+
+<header class="opening" data-chapter="intro">
+<p class="eyebrow">A VISUAL ESSAY ON DECISIONS &amp; AGENTS</p>
+<h1>Decision Models</h1>
+<p class="subtitle">What changes when the model returns the answer instead of writing it out, explained through Jev</p>
+<p class="byline">September 2026 · About 15 minutes</p>
+</header>
+
+<section class="blog-section" data-chapter="intro" id="intro">
+<p class="blog-lead">It’s 10:04 on launch day, and the support queue is filling up.</p>
+<p>You run support for a payments platform. Your agent reads every ticket before a person does: it works out who owns it, how urgent it is and what to do next. A merchant writes:</p>
+<p class="scenario-request">“Nobody can complete checkout. Every payment fails, and our launch starts in two hours.”</p>
+<p>Before your agent can help, it has to make three decisions. Is this an outage? Which team owns it? How bad is it? None of them needs an essay. Each one has a short list of right answers.</p>
+<p>Most agents today make those decisions the only way a language model knows how: by writing. The model reads the ticket, generates something like <code>{"team": "checkout", "urgent": true}</code> one token at a time, and your code parses the text back into a decision.</p>
+<p class="thesis">Most of what your agent does is choose. Today, it chooses by writing.</p>
+<p>Jev, from TypeSafe, takes a different approach. You define a question and its allowed answers. Jev returns a judgment: a probability, a distribution over your options or a score on a rubric. Nothing is written out, so there’s nothing to parse.</p>
+<p>This essay follows your launch-day queue from the first ticket to the last. It covers what the three kinds of answer mean, how they differ from generated text, where they fit inside an agent, what the published recordings and benchmarks show, and when a faster decision barely moves the whole workflow. The teaching examples are scripted, not Jev calls. The measurements are the publishers’ own, and they’re labelled that way.</p>
+<nav class="reader-paths" aria-label="Reader paths"><span>Skip ahead if you’re…</span><a class="name-chip" href="#agent">building agents</a><a class="name-chip" href="#evidence">choosing a model</a><a class="name-chip" href="#cost">costing a workflow</a></nav>
+</section>
+
+<section class="blog-section" data-chapter="halves" id="two-halves">
+<h2>Every decision has two halves</h2>
+<p>Before the ticket goes anywhere, one idea that explains the rest of this essay.</p>
+<p>Every decision your agent makes has two halves:</p>
+<ul>
+<li><strong>Judgment: what the model thinks is true.</strong> How likely is it that this ticket belongs to Checkout?</li>
+<li><strong>Policy: what your product does about it.</strong> Route it automatically, or ask a person first?</li>
+</ul>
+<p>The model owns the first half. Your application owns the second. Generated text tends to blur them: the model writes <code>"team": "checkout"</code> and the decision looks made. A judgment keeps them apart, so you can see how sure the model is and choose what to do about it.</p>
+<p>Try it. Pick a ticket, then move the threshold that decides when your product asks a human for help.</p>
+<figure class="lab" id="ticket-lab">
+<div class="figure-top"><span class="micro">01 / Route the ticket</span><span class="micro">Interactive · invented probabilities</span></div>
+<div class="segmented" role="group" aria-label="Example message">
+<button type="button" data-ticket="outage" aria-pressed="true">Checkout is down</button>
+<button type="button" data-ticket="ambiguous" aria-pressed="false">Ambiguous request</button>
+<button type="button" data-ticket="billing" aria-pressed="false">Invoice question</button>
+</div>
+<div class="split">
+<div class="lane">
+<div class="lane-heading"><strong>The ticket</strong><span>What the customer wrote</span></div>
+<blockquote id="ticket-text"></blockquote>
+<p class="lab-note">Question: <strong>“Which team should handle this?”</strong><br>Allowed answers: checkout, billing, identity, other. This is a <strong>Choice</strong>.</p>
+</div>
+<div class="lane">
+<div class="lane-heading"><strong>Judgment</strong><span>What the model thinks is true</span></div>
+<div id="ticket-bars" class="probabilities"></div>
+</div>
+</div>
+<div class="lane policy">
+<div class="lane-heading"><strong>Policy</strong><span>What your product does about it</span></div>
+<label for="ticket-threshold">Route automatically when the winning option reaches <output id="ticket-threshold-value">80%</output></label>
+<input id="ticket-threshold" type="range" min="40" max="99" value="80">
+<p id="ticket-action" class="lane-result" aria-live="polite"></p>
+</div>
+<figcaption>These probabilities are invented, not a live Jev response. The slider uses the winning option’s probability; Jev’s separate <code>confidence</code> field is a different statistic. A threshold is a product policy, not a guarantee of correctness.</figcaption>
+</figure>
+<p>The outage routes itself at almost any threshold. The ambiguous ticket splits between Billing and Identity, and at 80% it goes to a person. Raise the threshold and more tickets go to review. The model’s output didn’t change. Your policy did.</p>
+<p>Every figure below keeps those two halves apart. Watch which side each step lands on.</p>
+</section>
+
+<section class="blog-section" data-chapter="answers" id="answers">
+<h2>Three kinds of answer</h2>
+<p>The merchant’s ticket needs three decisions, and each one is a different shape of question. Jev has a primitive for each:</p>
+<ul>
+<li><strong>Noul: yes or no.</strong> Does the message describe an outage? You get one probability.</li>
+<li><strong>Choice: one of the options you define.</strong> Which team: checkout, billing, identity or other? You get a probability for every option, so code can see the runner-up too.</li>
+<li><strong>Score: a position on an ordered rubric.</strong> How severe, from 0 (routine) to 3 (critical)? You get a distribution over the rubric and its probability-weighted mean.</li>
+</ul>
+<p>Ask all three about the checkout ticket:</p>
+<figure class="lab" id="answer-lab">
+<div class="figure-top"><span class="micro">02 / One ticket, three questions</span><span class="micro">Interactive · invented outputs</span></div>
+<blockquote>“Nobody can complete checkout. Every payment fails, and our launch starts in two hours.”</blockquote>
+<div class="segmented" role="group" aria-label="Question type">
+<button type="button" data-answer="noul" aria-pressed="true">Is this an outage?</button>
+<button type="button" data-answer="choice" aria-pressed="false">Which team?</button>
+<button type="button" data-answer="score" aria-pressed="false">How severe?</button>
+</div>
+<div class="split">
+<div class="lane">
+<div class="lane-heading"><strong>Judgment</strong><span id="answer-type">NOUL · YES / NO</span></div>
+<h3 id="answer-question">Does the message describe an outage?</h3>
+<div id="answer-chart" class="probabilities"></div>
+</div>
+<div class="lane" aria-live="polite">
+<div class="lane-heading"><strong>Returned value</strong><span>What your code receives</span></div>
+<output id="answer-value" class="big-value"></output>
+<p id="answer-explanation" class="lab-note"></p>
+<div class="lane-heading"><strong>Policy</strong><span>An example application rule</span></div>
+<code id="answer-rule" class="lane-call"></code>
+</div>
+</div>
+<figcaption>Invented outputs for teaching. Score uses a probability-weighted mean of rubric positions, starting at 0. These are model judgments, not observed facts. <a href="https://docs.typesafe.ai/">API documentation ↗</a></figcaption>
+</figure>
+<p>For the checkout ticket, the answers come back as 0.96, Checkout at 92% and 2.80 out of 3. Each one meets a rule your application owns: open an incident review, route to Checkout, put it in the priority queue.</p>
+<p>Two things are easy to misread. A Score of 2.80 is an average position on the rubric, not a 93% chance of being critical. And Choice options aren’t fixed in advance: you define them with each request. That matters later, when the options are the buttons on a web page or the legal moves in a game.</p>
+<details class="estimate-assumptions">
+<summary>How would a regular LLM answer?</summary>
+<p>You could ask an LLM to generate JSON such as <code>{"team":"checkout"}</code>. Structured output constrains the format. The model still generates output tokens in sequence. Jev exposes a specialized interface for judgments; your program receives typed values and probabilities.</p>
+<p>Classification and scoring have existed for years. The useful question is whether a model can handle your changing questions accurately, quickly and cheaply enough to use throughout a workflow.</p>
+</details>
+</section>
+
+<section class="blog-section" data-chapter="how" id="how">
+<p class="chapter-kicker">UNDER THE HOOD</p>
+<h2>Two ways to answer the same ticket</h2>
+<p>A text-generating model does two jobs. It processes what you sent, which is called prefill. Then it produces the answer one token at a time, which is called decoding. Every generated token depends on the ones before it, so three answers written as JSON come out in sequence.</p>
+<p>For a question with known answers, a decision model can skip the writing. TypeSafe documents that the questions in one request are evaluated independently against the same shared state and come back together as typed values.</p>
+<p>Step through both paths with the checkout ticket:</p>
+<figure class="lab" id="architecture-lab">
+<div class="figure-top"><span class="micro" id="arch-count"></span><span class="micro">Stepped · invented outputs</span></div>
+<div class="explain-box" aria-live="polite"><h3 id="arch-title"></h3><p id="arch-copy"></p></div>
+<div class="arch-input"><span class="micro">Shared input</span><p>“Customers cannot complete checkout.”</p><small>Questions: which team? urgent? severity on a 0–3 rubric?</small></div>
+<div class="split arch-paths">
+<div class="lane">
+<div class="lane-heading"><strong>Generative LLM</strong><span>Writes the answer</span></div>
+<div class="arch-block" data-arch="read">Understand the input</div>
+<div class="token-strip" id="decode-tokens"><span>{</span><span>"team":</span><span>"checkout",</span><span>"urgent":</span><span>true,</span><span>"severity":</span><span>2.8</span><span>}</span></div>
+<small class="grammar-note">Read left to right: each generated token depends on the output before it. Fragments are grouped for readability.</small>
+<div class="arch-block" data-arch="parse">Return structured text to the application</div>
+</div>
+<div class="lane lane-accent">
+<div class="lane-heading"><strong>Jev</strong><span>Documented behavior</span></div>
+<div class="arch-block" data-arch="read">Evaluate state and questions</div>
+<div id="parallel-answers"><div>Team <b>Checkout · 92%</b></div><div>Urgent <b>0.96</b></div><div>Severity <b>2.8 / 3</b></div></div>
+<small class="grammar-note">Three independent judgments. For this example, code treats urgency ≥ 0.90 as true.</small>
+<div class="arch-block" data-arch="direct">Return typed judgments to the application</div>
+</div>
+</div>
+<p id="arch-policy" class="lane-result green" hidden>Policy: route to Checkout; urgency ≥ 0.90 (or true) and severity ≥ 2.5 put the case in the priority review queue. This doesn’t confirm that an outage exists.</p>
+<div class="demo-footer"><button type="button" id="arch-prev" class="ghost-button">← Back</button><button type="button" id="arch-next" class="primary-button">Next stage →</button><button type="button" id="arch-reset" class="ghost-button">Start over</button><span id="arch-progress" class="micro" aria-live="polite"></span></div>
+<figcaption>Based on <a href="https://docs.typesafe.ai/">documented request behavior</a> and <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe’s parallel-output description</a>. The token fragments are illustrative, not a tokenizer trace. Stages are not a clock or a measured speed comparison.</figcaption>
+</figure>
+<p>Both paths end in the same place: your code routes to Checkout and flags priority review. What differs is the shape of the output, and that’s all this figure shows.</p>
+<p><strong>Several questions, one situation.</strong> The three questions don’t read one another’s answers. If a later question needs an earlier answer, your code starts another request with that new information.</p>
+<div class="shared-diagram" aria-label="One incident report feeds three independent questions, whose answers meet in application policy">
+<div class="state-node"><b>One incident report</b><span>Common evidence</span></div>
+<div class="branch-column"><div><b>Which team?</b><span>Choice</span></div><div><b>Urgent?</b><span>Noul</span></div><div><b>How severe?</b><span>Score</span></div></div>
+<div class="state-node"><b>Application policy</b><span>Combine judgments with facts</span></div>
+</div>
+<p>A plausible implementation processes the common context once and lets the question branches reuse it. The exact cache layout, attention pattern, model size and decision head are not publicly established. So it’s worth being clear about which parts are known:</p>
+<div class="evidence-rows">
+<div><span class="evidence">Documented</span><p><strong>Typed questions, parallel judgments.</strong> The API accepts shared state and named questions, then returns values and distributions. TypeSafe describes RLCD as its training approach for calibrated decisions. <a href="https://docs.typesafe.ai/">Docs ↗</a></p></div>
+<div><span class="evidence evidence-interpretation">Interpretation</span><p><strong>Shared representations and direct readouts.</strong> These mechanisms explain how a system like this could work. Archer Hume’s API probes support aspects of shared computation and question isolation, but don’t reveal the implementation. <a href="https://archerhume.com/posts/jevs-architecture-unmasked/?v=3">Analysis ↗</a></p></div>
+<div><span class="evidence evidence-unknown">Not established</span><p><strong>Exact backbone, sparse experts and training recipe.</strong> Don’t treat an inferred transformer diagram as a published Jev architecture. A behavioral match can have many implementations.</p></div>
+</div>
+<details class="estimate-assumptions">
+<summary>Six terms, if you need them</summary>
+<p><strong>Token.</strong> A piece of text used by the model: a word, part of a word or punctuation.</p>
+<p><strong>Prefill.</strong> The input-processing phase of a typical generative LLM. It builds contextual representations before the first output token.</p>
+<p><strong>Autoregressive decoding.</strong> Generate one token, include it in the context, then choose the next. Those output steps depend on one another.</p>
+<p><strong>Readout.</strong> A numerical mapping from a model’s internal representation to scores or probabilities. A conceptual way to understand a decision output.</p>
+<p><strong>KV cache.</strong> Stored intermediate information that a transformer can reuse rather than recomputing earlier context.</p>
+<p><strong>Calibration.</strong> Whether probabilities match observed frequencies of correctness over many examples. It’s measured over a dataset, not established by a single answer.</p>
+</details>
+<p><strong>Why not just use structured output?</strong> Fair question. Constrained decoding already stops a model from inventing a team name. The honest comparison is against the best baseline for your job:</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Approaches to compare"><table><thead><tr><th>Approach</th><th>What it gives you</th><th>What to compare</th></tr></thead><tbody>
+<tr><th>Rules or a small classifier</th><td>Efficient decisions in a narrow, stable domain</td><td>Accuracy and maintenance as inputs change</td></tr>
+<tr><th>LLM with a strict output schema</th><td>Broad language ability with a constrained answer format</td><td>Task quality, output length, latency, price</td></tr>
+<tr><th>LLM with candidate scoring</th><td>A decision baseline using scores for allowed outcomes</td><td>How scores are obtained and calibrated for your task</td></tr>
+<tr><th>Jev</th><td>A service specialized for typed judgments and distributions</td><td>The same task, quality bar and end-to-end workflow</td></tr>
+</tbody></table></div>
+<p>Typed output is useful, but it doesn’t by itself establish better reasoning or trustworthy probabilities. A short constrained LLM response may be far faster than a long reasoning response.</p>
+<p><strong>Probabilities make policy visible.</strong> If many predictions assigned 80% are right about 80% of the time, the model is calibrated, and your threshold means what you think it means.</p>
+<div class="calibration-visual" role="img" aria-label="Illustration: among ten predictions assigned 80 percent, eight correct and two incorrect"><span>✓</span><span>✓</span><span>✓</span><span>✓</span><span>✓</span><span>✓</span><span>✓</span><span>✓</span><span>×</span><span>×</span></div>
+<p>Ten icons illustrate the idea; a real evaluation needs enough representative examples and uncertainty estimates. The <code>confidence</code> field for Choice and Score is derived from the distribution’s shape. It isn’t simply the largest probability, and Noul has no separate confidence field.</p>
+<div class="citations"><a href="https://docs.typesafe.ai/">TypeSafe API docs <span aria-hidden="true">↗</span></a><a href="https://docs.typesafe.ai/confidence">Confidence documentation <span aria-hidden="true">↗</span></a><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe launch post <span aria-hidden="true">↗</span></a><a href="https://archerhume.com/posts/jevs-architecture-unmasked/?v=3">Archer Hume: architecture probes <span aria-hidden="true">↗</span></a></div>
+<p class="ending-outcome"><strong>At 10:04:</strong> routed to Checkout and flagged for priority review. Three judgments, one request, no text to parse.</p>
+</section>
+
+<section class="blog-section" data-chapter="agent" id="agent">
+<p class="chapter-kicker">THE AGENT LOOP</p>
+<h2>The refund at 10:19</h2>
+<p>Fifteen minutes later, a different kind of ticket:</p>
+<p class="scenario-request">“Two charges appeared for my order. Please refund the duplicate.”</p>
+<p>This one isn’t a single decision. It’s a loop: read, interpret, check policy, use a tool, reply. An agent observes a situation, chooses an action and checks what changed. Jev can take the bounded judgments inside that loop. A language model still handles open-ended planning and writing. Code still checks the facts.</p>
+<p>Same ticket, four ledgers. Pick one and step through.</p>
+<figure class="lab" id="agent-lab">
+<div class="figure-top"><span class="micro">03 / A support agent, step by step</span><span class="micro">Scripted · no model or payment system called</span></div>
+<div class="fork-controls"><label class="select-label">Ledger<select id="agent-scenario">
+<option value="clear">Confirmed duplicate charge</option>
+<option value="uncertain">One entry is still pending</option>
+<option value="blocked">Confirmed, but no refund permission</option>
+<option value="failed">Eligible refund, but the tool fails</option>
+</select></label></div>
+<div class="agent-map" role="group" aria-label="Agent workflow">
+<button type="button" data-agent-stage="0">1 · Read</button>
+<button type="button" data-agent-stage="1">2 · Interpret</button>
+<button type="button" data-agent-stage="2">3 · Check policy</button>
+<button type="button" data-agent-stage="3">4 · Use tools</button>
+<button type="button" data-agent-stage="4">5 · Reply</button>
+</div>
+<div class="split">
+<div class="lane"><span class="micro" id="agent-owner"></span><h3 id="agent-title"></h3><p id="agent-copy" class="lab-note"></p></div>
+<div class="lane"><div class="lane-heading"><strong>State &amp; evidence</strong><span>What the agent can check</span></div><div id="agent-evidence"></div></div>
+</div>
+<div class="demo-footer"><button type="button" id="agent-prev" class="ghost-button">← Back</button><button type="button" id="agent-next" class="primary-button">Next step →</button><button type="button" id="agent-reset" class="ghost-button">Start over</button><span id="agent-status" class="micro" aria-live="polite"></span></div>
+<figcaption>Scripted teaching example with invented outputs. No model or payment system is called.</figcaption>
+</figure>
+<p>Only one of the four ledgers ends in a refund. In the other three, the agent does the right thing by not claiming one:</p>
+<ul>
+<li><strong>One entry is still pending.</strong> Jev is 97% sure the customer wants a refund. That establishes intent, not eligibility. Code sees one settled charge and routes the case for review.</li>
+<li><strong>No refund permission.</strong> The duplicate is real, but this agent can’t issue refunds. Code hands the case to an authorised operator.</li>
+<li><strong>The tool fails.</strong> Every check passes, and the refund call returns a temporary error. No receipt, so no “refunded” message.</li>
+</ul>
+<p>A high probability isn’t proof, and an attempted tool call isn’t a result. The judgment tells you what the customer wants. The ledger, the permission check and the tool receipt tell you what’s true.</p>
+<div class="question-grid two">
+<article><h3>Jev: bounded judgments</h3><p>Which tool is relevant?</p><p>Does this result answer the question?</p><p>Does the proposed reply contradict the record?</p><p>Should the system ask for clarification?</p></article>
+<article><h3>The rest of the system</h3><p><strong>LLM:</strong> make a plan and write the response.</p><p><strong>Tools:</strong> retrieve authoritative facts.</p><p><strong>Code:</strong> check access, limits and consent.</p><p><strong>Runtime:</strong> retry, log and verify tool outcomes.</p></article>
+</div>
+<p class="ending-outcome"><strong>At 10:19:</strong> refunded on the first try when the ledger, the permission and the tool all agree. Handed to a person, honestly, when any of them doesn’t.</p>
+</section>
+
+<section class="blog-section" data-chapter="agent" id="question-plan">
+<h2>Which questions can share a request?</h2>
+<p>Parallel answers don’t make a whole agent parallel. Questions about the same evidence can go in one request. A question that needs a tool result has to wait for it.</p>
+<p>Pick the questions your agent asks about the refund ticket, then decide when the payment team’s investigation note arrives.</p>
+<figure class="lab" id="dependency-lab">
+<div class="figure-top"><span class="micro">04 / Request dependencies</span><span class="micro">Interactive · counts rounds, not seconds</span></div>
+<div class="split">
+<fieldset class="check-list"><legend class="micro">Questions to ask</legend>
+<label><input type="checkbox" data-check="intent" checked> Is the customer requesting a refund?</label>
+<label><input type="checkbox" data-check="duplicate" checked> Does the investigation note address the complaint?</label>
+<label><input type="checkbox" data-check="urgency" checked> Is the request urgent?</label>
+</fieldset>
+<fieldset class="check-list"><legend class="micro">When is the investigation note available?</legend>
+<label><input type="radio" name="record-source" value="ready" checked> Already included with the message</label>
+<label><input type="radio" name="record-source" value="fetch"> Fetch it after evaluating the message</label>
+</fieldset>
+</div>
+<div class="workflow-board" id="dependency-board" aria-label="Agent execution diagram"></div>
+<div class="workflow-result" aria-live="polite"><output id="dependency-count"></output><p id="dependency-explanation" class="lab-note"></p></div>
+<figcaption>Questions in one Jev request share the same state and can’t use each other’s answers. A tool call can add delay even when it needs no model request. <a href="https://docs.typesafe.ai/">Documented behavior ↗</a></figcaption>
+</figure>
+<p>For a PM, this changes what to measure. Not how fast one call is, but how the whole case goes:</p>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Outcomes and what to measure"><table><thead><tr><th>Outcome</th><th>Design choice</th><th>What to measure</th></tr></thead><tbody>
+<tr><th>Faster time to resolution</th><td>Route tickets before generating a response</td><td>Lower p95 resolution time, with no rise in misroutes</td></tr>
+<tr><th>Lower service cost</th><td>Handle easy judgments cheaply; escalate the rest</td><td>Lower total cost per correct resolution, including review</td></tr>
+<tr><th>More reliable agents</th><td>Check evidence after each tool action</td><td>More failures caught at an acceptable false-alarm rate</td></tr>
+<tr><th>Better answers</th><td>Filter and rank retrieved evidence</td><td>Improved grounded-answer quality without losing relevant facts</td></tr>
+</tbody></table></div>
+<p>Start in shadow mode: compute the judgment but keep the existing behavior. Label the disagreements, choose a threshold, and compare against rules, a small classifier and a structured-output LLM before you let it route live tickets.</p>
+</section>
+
+<section class="blog-section" data-chapter="evidence" id="evidence">
+<p class="chapter-kicker">THE EVIDENCE</p>
+<h2>What the recordings and benchmarks show</h2>
+<p>So far every number has been invented for teaching. Here’s what has been published. There are three kinds of evidence, and they answer different questions: a recording shows one run, a benchmark compares a defined workload, and the calculator in the next section estimates outcomes from your assumptions.</p>
+<p id="recording"><strong>A flight search at normal speed.</strong> Browser Use’s <code>jev-ultrafast</code> combines Jev action selection with a small text model. The published run takes <strong>7.073 seconds</strong> after the initial page observation, including later model calls, text generation and browser waits.</p>
+<video class="embed" controls playsinline preload="metadata" aria-label="Browser Use’s real Google Flights search at normal speed"><source src="https://raw.githubusercontent.com/browser-use/jev-ultrafast/main/docs/demo.mp4" type="video/mp4">Your browser can’t play this recording. Open the source below.</video>
+<p class="figure-note">One task and browser profile; not a general browser success-rate benchmark. The initial page observation is outside the reported task timer. <a href="https://github.com/browser-use/jev-ultrafast">Source and recording ↗</a> · <a href="https://github.com/browser-use/jev-ultrafast/blob/main/docs/performance.md">Timing boundaries ↗</a></p>
+<p id="side-by-side"><strong>Jev beside a generative model.</strong> TypeSafe’s launch post has a side-by-side recording, restricted to its own domain, so <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">watch it there under “Side-by-side demonstration”</a>. Jev returns the judgments together while the other model produces a response over time. TypeSafe identifies the comparison as GPT-5.6 Terra at default reasoning, with a short input chosen to emphasize output speed. It’s one demonstration, not a latency distribution. You can <a href="https://console.typesafe.ai/playground?share=shr_13a74b495fb786c4bd7964f11597301e7c9">inspect the shared query</a> with early access.</p>
+<p>The question to ask next: does the advantage hold for your input length, region, concurrency and quality bar? A longer input, a shorter LLM answer or a slower tool can change the result a lot.</p>
+<p id="comparison"><strong>Nine models, four workflows.</strong> TypeSafe publishes a four-workflow evaluation. This is a snapshot read on 18 September 2026: workflow-level results, not per-call API latency, with model labels as the source shows them.</p>
+<figure class="lab" id="benchmark-lab">
+<div class="figure-top"><span class="micro">05 / Published workflow results</span><span class="micro">Publisher snapshot · not a reproduction</span></div>
+<div class="segmented" role="group" aria-label="Benchmark metric">
+<button type="button" data-metric="seconds" aria-pressed="true">Time per workflow</button>
+<button type="button" data-metric="cost" aria-pressed="false">Cost per workflow</button>
+<button type="button" data-metric="accuracy" aria-pressed="false">Reference agreement</button>
+</div>
+<p id="benchmark-caption" class="micro"></p>
+<div id="benchmark-chart" role="img" aria-label="Model benchmark comparison"></div>
+<div class="fork-controls"><label class="select-label" for="benchmark-model">Compare Jev with</label><select id="benchmark-model"></select></div>
+<p id="benchmark-summary" class="lane-result" aria-live="polite"></p>
+<figcaption>Linear bars start at zero; read the table for small values. Ratios use the rounded values the publisher displays and are approximate.</figcaption>
+</figure>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Published workflow results"><table><thead><tr><th>Model label</th><th>Reference agreement ↑</th><th>Time ↓</th><th>Cost / workflow ↓</th></tr></thead><tbody id="benchmark-table"><tr><td colspan="4">Enable JavaScript for the comparison table, or open the publisher’s explorer below.</td></tr></tbody></table></div>
+<p class="figure-note">Source: <a href="https://evals.typesafe.ai/">TypeSafe workflow evaluations</a>. Equal-weight mean of security incidents, agent trace review, invoices and customer service. Reference answers come from GPT-6 Astra and Claude Fable 5.1 at high thinking; tested models use provider-default reasoning. “Reference agreement” is the source’s accuracy metric, not human-verified task success.</p>
+<p>Read the tradeoff carefully. Jev is inexpensive and fast in this test. It doesn’t lead every model on reference agreement. The benchmark evaluates one harness and a probability-output workload, so compare short structured outputs, smaller classifiers and rules on your own task too.</p>
+<details class="estimate-assumptions">
+<summary>Open the publisher’s interactive benchmark explorer</summary>
+<p>Switch cost and time and inspect individual workflows. This is the live external source and may change after this essay’s snapshot. <a href="https://evals.typesafe.ai/">Open it in its own page ↗</a></p>
+<div class="embed embed-tall"><div class="embed-placeholder"><strong>Explore the source data</strong><button type="button" class="primary-button" data-embed="https://evals.typesafe.ai/" data-title="TypeSafe’s live workflow benchmark explorer">Load benchmark explorer</button></div></div>
+</details>
+<p id="game-recordings"><strong>Decisions in a loop.</strong> TypeSafe also shows Jev <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">playing Doom</a> from textual game state, not screenshots, and <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">wikiracing</a> toward a target article by choosing the next link. Both illustrate fast control loops. A purpose-built game bot can still play better.</p>
+<p>Before you trust any of it for your queue, run the same test on your own workload:</p>
+<ol class="numbered">
+<li><strong>Define the task.</strong> Same input, permitted actions and success criteria for every candidate.</li>
+<li><strong>Match the baseline to the job.</strong> Include your current system, a fast structured-output LLM and a narrow classifier where it fits.</li>
+<li><strong>Measure user-visible time.</strong> Report p50 and p95, including network, tools, retries and fallbacks.</li>
+<li><strong>Measure useful work.</strong> Track correct automated outcomes, escalation rate and cost per successful task.</li>
+<li><strong>Check uncertainty.</strong> Evaluate calibration and errors across the customer segments that matter.</li>
+</ol>
+</section>
+
+<section class="blog-section" data-chapter="cost" id="cost">
+<p class="chapter-kicker">COST &amp; LATENCY</p>
+<h2>What a faster decision is worth</h2>
+<p>A decision that’s ten times faster doesn’t make a ticket ten times faster. The rest of the workflow is still there: tools, planning, the final reply, and a fallback call whenever Jev isn’t sure enough.</p>
+<p>The calculator compares an LLM-only path with a Jev-first path that sometimes falls back to the LLM. A <strong>workflow</strong> is one completed task, such as resolving a ticket. A <strong>round</strong> is one model request that must finish before the next begins. The default is a hypothetical six-round task, not the five steps of the refund walkthrough.</p>
+<figure class="lab" id="economics-lab">
+<div class="figure-top"><span class="micro">06 / One complete workflow</span><span class="micro">Illustrative model · not a benchmark</span></div>
+<div class="segmented" role="group" aria-label="Illustrative scenario">
+<button type="button" data-preset="interactive" aria-pressed="true">Interactive agent</button>
+<button type="button" data-preset="bulk" aria-pressed="false">High-volume triage</button>
+<button type="button" data-preset="tools" aria-pressed="false">Slow tools dominate</button>
+<button type="button" data-preset="fast" aria-pressed="false">Fast LLM baseline</button>
+</div>
+<div class="control-grid">
+<label>Workflows per month<input id="volume" type="number" value="100000" min="0" max="1000000000" step="1"></label>
+<label>Sequential decision rounds per workflow<input id="rounds" type="number" value="6" min="1" max="100" step="1"><small>Each round is one request; independent questions can share it.</small></label>
+<label>LLM time per decision request · ms<input id="llm-ms" type="number" value="2500" min="1" max="120000" step="1"></label>
+<label>Jev time per decision request · ms<input id="jev-ms" type="number" value="250" min="1" max="120000" step="1"></label>
+<label>Other sequential time per workflow · ms<input id="common-ms" type="number" value="2000" min="0" max="600000" step="1"><small>Tools, planning, final response and other unchanged delays.</small></label>
+<label>Jev requests falling back to the LLM <output id="fallback-value">10%</output><input id="fallback" type="range" value="10" min="0" max="100" step="1"><small>Fallback adds a full LLM request after the Jev request.</small></label>
+</div>
+<details class="inline-details">
+<summary>Pricing and token assumptions</summary>
+<div class="control-grid">
+<label>Input tokens per decision request<input id="tokens" type="number" value="2000" min="1" max="65536" step="1"><small>Include state, instructions, options and request overhead.</small></label>
+<label>LLM output tokens per decision request<input id="output" type="number" value="120" min="1" max="32000" step="1"></label>
+<label>LLM input price · USD / million tokens<input id="llm-in" type="number" value="1" min="0" max="1000" step="0.01"></label>
+<label>LLM output price · USD / million tokens<input id="llm-out" type="number" value="5" min="0" max="1000" step="0.01"></label>
+<label>Jev input price · USD / million tokens<input id="jev-in" type="number" value="0.042" min="0" max="1000" step="0.001"></label>
+<label>Shared generation/tool spend · USD / workflow<input id="common-cost" type="number" value="0.01" min="0" max="1000" step="0.001"><small>Spend unchanged in both paths, such as writing the final reply.</small></label>
+</div>
+</details>
+<p id="input-error" class="lane-result amber" role="alert"></p>
+<div class="metrics">
+<div class="metric"><span class="micro">LLM-only monthly cost</span><output id="baseline-cost"></output></div>
+<div class="metric"><span class="micro">Jev-first monthly cost, with fallback</span><output id="hybrid-cost"></output></div>
+<div class="metric"><span class="micro" id="savings-label">Monthly savings</span><output id="cost-savings"></output></div>
+</div>
+<div class="split">
+<div class="lane"><div class="lane-heading"><strong>Where the Jev-first spend goes</strong></div><div class="cost-stack" id="cost-stack"><span></span><span></span><span></span></div><p class="lane-legend"><span class="green">Jev decisions</span> · <span class="amber">LLM fallback</span> · <span class="muted-key">Shared spend</span></p><p id="cost-breakdown" class="lab-note"></p></div>
+<div class="lane"><div class="lane-heading"><strong>The user-visible effect</strong></div><p id="latency-summary" class="lab-note strong"></p><p id="limit-summary" class="lab-note"></p></div>
+</div>
+<div class="race">
+<span class="micro">Play the expected-time comparison</span>
+<div class="race-lane"><div class="lane-label"><b>LLM only</b><output id="baseline-time"></output></div><div class="race-track"><span id="race-llm"></span></div></div>
+<div class="race-lane"><div class="lane-label"><b>Jev first + fallback</b><output id="hybrid-time"></output></div><div class="race-track"><span id="race-jev"></span></div></div>
+</div>
+<div class="demo-footer"><button type="button" class="primary-button" id="race-play">Play simulation</button><button type="button" class="ghost-button" id="race-reset">Reset</button><span id="race-status" class="micro" aria-live="polite"></span></div>
+<p id="economics-takeaway" class="lane-result"></p>
+<figcaption>An animation of the calculation; it doesn’t call either model. Fractional fallback counts are averages over many workflows. Presets are invented scenarios, not measurements of named models; bring measured request times from your own workload.</figcaption>
+</figure>
+<details class="estimate-assumptions">
+<summary>Equations and what’s included · not a benchmark or provider bill</summary>
+<p class="formula">LLM request cost = (input tokens × input price + output tokens × output price) / 1,000,000</p>
+<p class="formula">Jev request cost = input tokens × Jev price / 1,000,000</p>
+<p class="formula">Monthly LLM cost = workflows × (rounds × LLM request cost + shared cost)</p>
+<p class="formula">Monthly Jev-first cost = workflows × (rounds × (Jev request cost + fallback fraction × LLM request cost) + shared cost)</p>
+<p class="formula">LLM time = rounds × LLM request time + other time</p>
+<p class="formula">Expected Jev-first time = rounds × (Jev request time + fallback fraction × LLM request time) + other time</p>
+<p>Jev output is priced at zero, following launch pricing. Both paths use the same entered input size. Pricing tiers, cache discounts, batch discounts, different tokenizers, additional retries, throughput limits, human review and the cost of errors are not modeled. Per-request times should include network and service delay. This estimates a mean, not p95; the slowest fallback path can still dominate tail latency.</p>
+<p>Price source: <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe’s launch announcement</a>, $0.042 per million input tokens with output free, checked 18 September 2026. All other defaults are illustrative.</p>
+</details>
+<p>Three presets show where the advantage shrinks:</p>
+<ul>
+<li><strong>Fallback approaches 100%.</strong> You pay for Jev and then the LLM on almost every request. Move the slider to find where the extra call stops paying off.</li>
+<li><strong>The rest of the task is slow.</strong> If a tool takes 20 seconds, faster decisions save only the model’s share. Try “Slow tools dominate.”</li>
+<li><strong>The baseline is already efficient.</strong> A fast classifier or a short constrained answer leaves much less room to improve. Try “Fast LLM baseline.”</li>
+</ul>
+<p class="thesis">Per-call speed and system speed are different numbers.</p>
+<p>What matters is how many calls a ticket needs, which ones depend on each other, and how much time and cost sit everywhere else.</p>
+</section>
+
+<section class="blog-section" data-chapter="elsewhere" id="elsewhere">
+<h2>The same shape, elsewhere</h2>
+<p>Support tickets are one example. The pattern is general: start with data the application already has, ask a bounded question, and use the answer in code.</p>
+<div class="question-grid">
+<article><h3>Search</h3><p><strong>Score</strong> each of 50 retrieved documents against the query; code sorts them.</p><p>It can’t recover a document the retrieval step missed.</p></article>
+<article><h3>Tool selection</h3><p><strong>Choice</strong> among permitted tools, including “none fit”.</p><p>Choosing a tool doesn’t supply its arguments or authorise the call.</p></article>
+<article><h3>Notifications</h3><p><strong>Noul</strong>: does this need the user’s attention now? Quiet hours stay in code.</p><p>A higher threshold trades interruptions for missed events.</p></article>
+</div>
+<p id="browser"><strong>Browser agents are mostly small decisions.</strong> An agent reads the page, picks an action, runs it and checks the result. The browser runtime extracts the controls it can actually use, so the model never invents a selector. Each candidate pairs an operation with a compatible target. Jev chooses; a text model is called only when the action needs words, such as typing “London” into a destination field.</p>
+<div class="code-wrap"><div class="code-label">Conceptual pseudocode · not an SDK example</div><pre>for step in range(step_budget):
+    page = browser.observe()
+    if verify_goal(page, goal):
+        break
+
+    # Each entry includes an operation and a compatible target.
+    actions = build_allowed_actions(page, goal, max_candidates=255)
+    if not actions:
+        ask_for_help()
+        break
+
+    action = choose(state={goal, page}, options=actions)
+    if not policy.allows(action) or not browser.is_current(action):
+        ask_for_help()
+        break
+
+    if action.operation == "TYPE_TEXT":
+        text = text_model(goal, page, action.target)
+        browser.type(action.target, text)
+    else:
+        browser.execute(action)
+else:
+    ask_for_help()  # The step budget ended without verified success.</pre></div>
+<p>The Choice options are rebuilt from every page, which is why defining them per request matters. The linked Browser Use demo asks operation and target questions together, then combines compatible answers in code; those questions can’t see each other’s answers. And choosing an action isn’t permission to run it: the runtime still enforces domain allowlists, blocks arbitrary code, asks before purchases, rejects stale elements and verifies success independently.</p>
+<p id="games"><strong>Games are the same loop, faster.</strong> The engine supplies the facts and the legal actions. Jev picks one. The engine executes it deterministically, and the world has moved on by the next decision, so the loop must reject choices based on stale state. For a large action space, score a shortlist first, then make a final Choice. The same composition works for tool search and large catalogs: generate candidates, narrow them with a Score, decide with a Choice.</p>
+<p id="compaction"><strong>Choosing what to remember.</strong> Traditional compaction asks an LLM to rewrite old context as a summary, and exact paths, errors and constraints can disappear. <a href="https://github.com/tamaratran/fast-jev-compaction">fast-jev-compaction</a> keeps the original conversation verbatim and asks Jev which old tool calls and results are still worth keeping; code removes the rest. It pins recent messages and falls back to ordinary summarization if pruning isn’t enough. The failure to watch for: an old error that becomes relevant again.</p>
+<p id="probably"><strong>A judgment inside an if statement.</strong> Steve Faulkner’s <a href="https://probably-lang.southpolesteve.workers.dev">Probably</a> takes the “AI if statement” literally, making semantic judgment part of the language’s syntax:</p>
+<div class="code-wrap"><div class="code-label">Illustrative syntax · check the project for its current form</div><pre>let email = input()
+
+if email feels "urgent" {
+    print(llm "Draft a reply" using email)
+}</pre></div>
+<p>The runtime can compile <code>feels</code> into a Noul, apply a threshold and take the branch normally. Arithmetic, loops and types stay conventional; interpreting human concepts becomes one more expression.</p>
+<details class="estimate-assumptions">
+<summary>Five more sketches · design ideas, not measured results</summary>
+<div class="table-scroll" role="region" tabindex="0" aria-label="Other possible integrations"><table><thead><tr><th>Application</th><th>Model question</th><th>What code still does</th><th>Failure to measure</th></tr></thead><tbody>
+<tr><th>RAG evidence filtering</th><td>Does this passage help answer the query?</td><td>Retrieve candidates, preserve attribution, assemble context</td><td>Relevant evidence removed</td></tr>
+<tr><th>Agent completion review</th><td>Do the tool results support the success claim?</td><td>Check receipts and required postconditions</td><td>False success accepted</td></tr>
+<tr><th>Semantic linting</th><td>Does the change violate a stated requirement?</td><td>Associate checks with source spans and review policy</td><td>False alarms or missed violations</td></tr>
+<tr><th>Database filtering</th><td>Does this row describe an outage?</td><td>Scan, join, store and enforce access controls</td><td>Misclassified rows and scanning cost</td></tr>
+<tr><th>UI selection</th><td>Which predefined component fits the situation?</td><td>Render accessible components and handle input</td><td>Wrong or unusable interaction</td></tr>
+</tbody></table></div>
+<p>Each adds a model call where ordinary software used to need a rule or a person. Whether it helps depends on the error rate and the cost of that extra call.</p>
+</details>
+</section>
+
+<section class="blog-section" data-chapter="limits" id="limits">
+<h2>Where it stops helping</h2>
+<p>None of this is free of caveats.</p>
+<ul>
+<li><strong>A valid answer can be wrong.</strong> Picking a real team avoids an invented team name. It doesn’t prove the team is right.</li>
+<li><strong>A probability needs validation.</strong> Check that predictions near 80% are right about 80% of the time, on your own data.</li>
+<li><strong>Some work still needs generation.</strong> Writing a reply, creating code and working through a new plan are still jobs for generative models.</li>
+<li><strong>A judgment isn’t permission.</strong> The ledger, the permission check and the tool receipt decide what actually happens.</li>
+</ul>
+</section>
+
+<section class="blog-section" data-chapter="back" id="back-to-launch">
+<h2>Back to 10:04</h2>
+<p>The next time a launch-day ticket lands, your agent should decide who owns it, how bad it is and whether to act. And it should hand each of those decisions to your code as a number it can check, not a sentence it has to parse.</p>
+<p class="blog-ending">The model judges. Your product decides.</p>
+</section>
+
+<div class="blog-endnote">
+<p>Independent educational notes. Sources checked 18 September 2026. Teaching examples are scripted with invented outputs; they are not Jev calls. Recordings and benchmark figures are the publishers’ own measurements. Interactive figures are simulations, not live models.</p>
+<h2 id="sources">Sources</h2>
+<div class="source-groups">
+<section><h3>TypeSafe</h3><div class="source-list">
+<a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One models and Jev ↗</a>
+<a href="https://docs.typesafe.ai/">API documentation ↗</a>
+<a href="https://docs.typesafe.ai/confidence">Confidence documentation ↗</a>
+<a href="https://evals.typesafe.ai/">Workflow evaluations ↗</a>
+<a href="https://console.typesafe.ai/playground?share=shr_13a74b495fb786c4bd7964f11597301e7c9">Shared side-by-side query ↗</a>
+</div></section>
+<section><h3>Recordings</h3><div class="source-list">
+<a href="https://github.com/browser-use/jev-ultrafast">Browser Use · jev-ultrafast ↗</a>
+<a href="https://github.com/browser-use/jev-ultrafast/blob/main/docs/performance.md">jev-ultrafast timing boundaries ↗</a>
+</div></section>
+<section><h3>Analysis &amp; projects</h3><div class="source-list">
+<a href="https://archerhume.com/posts/jevs-architecture-unmasked/?v=3">Archer Hume · Jev’s architecture probes ↗</a>
+<a href="https://github.com/tamaratran/fast-jev-compaction">tamaratran/fast-jev-compaction ↗</a>
+<a href="https://probably-lang.southpolesteve.workers.dev">Probably ↗</a>
+</div></section>
+<section><h3>This essay</h3><div class="source-list">
+<a href="https://github.com/sambhav/jev-explained">Source on GitHub ↗</a>
+</div></section>
+</div>
+</div>
+
+</article></main>
+
+<aside class="story-strip" id="story-strip" aria-label="Launch-day queue">
+<button type="button" class="story-mobile-button" id="story-toggle" aria-expanded="false" aria-controls="story-detail"><span class="pulse-dot" aria-hidden="true"></span><span id="story-mobile-label">LAUNCH DAY · 10:04</span><span class="story-toggle-icon" aria-hidden="true">▴</span></button>
+<div class="story-inner" id="story-detail">
+<div class="incident-badge" id="story-badge"><span class="pulse-dot" aria-hidden="true"></span><span id="story-status">LAUNCH DAY · queue filling</span> <time id="story-time">10:04</time></div>
+<blockquote id="story-quote">“Nobody can complete checkout. Every payment fails, and our launch starts in two hours.”</blockquote>
+<div class="story-judgments" id="story-judgments" aria-live="polite"></div>
+<div class="story-ending" id="story-ending"><span class="cursor">…</span></div>
+</div>
+</aside>
+</div>
+</div>
+<script src="vendor/highlight.min.js"></script>
+<script src="code-highlight.js"></script>
+<script src="walkthroughs.js?v=essay-1"></script>
+<script src="learn.js?v=essay-1"></script>
+<script src="home-labs.js?v=essay-1"></script>
+<script src="benchmarks.js?v=essay-1"></script>
+<script src="economics.js?v=essay-1"></script>
+<script src="essay.js?v=essay-1"></script>
+</body>
+</html>

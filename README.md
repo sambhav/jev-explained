@@ -1,16 +1,21 @@
-# Jev Explained
+# Decision Models, explained through Jev
 
-An independent, interactive guide for product managers and builders with a basic understanding of LLMs.
+An independent, interactive visual essay for product managers and builders with a basic understanding of LLMs. It shares its voice and visual system with [Dynamic Tools](https://sambhav.dev/dynamic-tools/).
 
-## Reading path
+## Experience
 
-1. `index.html`: routing, uncertainty and the three output types.
-2. `architecture.html`: compare complete outputs and separate documented behavior from inferred internals.
-3. `agents.html`: a five-step refund case, including pending records, permissions and tool failure; then request dependencies.
-4. `benchmarks.html`: recorded execution and nine-model workflow comparisons, with measurement boundaries.
-5. `economics.html`: estimate whole-workflow cost and latency from explicit assumptions.
+One continuous essay follows a payments platform's support queue on launch day: a checkout outage at 10:04, then a duplicate-charge refund at 10:19. It explains judgment versus policy, the three answer types (Noul, Choice, Score), generated text versus typed judgments, the agent loop and request dependencies, the published recordings and benchmarks, whole-workflow cost and latency, and the same pattern in search, browser agents, games, context compaction and Probably. A sticky story strip tracks the queue as you read. Dark by default with a light theme switch, responsive layout and reduced-motion support.
 
-`patterns.html` indexes optional search, tool-selection, notification, browser, game and context-selection examples. Every page links to the guide contents and its appropriate continuation. `walkthroughs.js` supplies the scripted scenario states and request-count logic, covered by regression tests.
+The old chapter URLs (`architecture.html`, `agents.html`, `benchmarks.html`, `economics.html`, `patterns.html`, `browser.html`, `gaming.html`, `emerging.html`) redirect to the matching section of `index.html`.
+
+## Source map
+
+- `index.html`: the essay.
+- `essay.css`: design tokens, layout and figure styles, matching Dynamic Tools.
+- `essay.js`: theme switch and the launch-day story strip.
+- `learn.js`, `home-labs.js`: ticket routing, answer types, the two-path walkthrough, the agent walkthrough and request dependencies.
+- `walkthroughs.js`: scripted scenario states and request-count logic, covered by regression tests.
+- `benchmarks.js`, `economics.js`: the published benchmark snapshot and the cost and latency calculator.
 
 ## Run locally
 
@@ -20,7 +25,7 @@ python -m http.server 8765
 node --test tests/*.test.cjs
 ```
 
-Static HTML/CSS/JS, no build step or API credentials. D3 7.9.0 and highlight.js 11.11.1 are vendored with licenses. The core educational demos run locally; videos and the optional benchmark explorer load external media when requested.
+Static HTML/CSS/JS, no build step or API credentials. highlight.js 11.11.1 is vendored with licenses. The core educational demos run locally; videos and the optional benchmark explorer load external media when requested.
 
 ## Evidence and calculations
 
